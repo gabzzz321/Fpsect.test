@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Nexus Pro</title>
+    <style>
+        :root { --gold: #d4af37; --white: #ffffff; }
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; font-family: sans-serif; background: radial-gradient(circle, #fff 0%, #e0e0e0 100%); overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        .gui-page { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s ease-in-out, visibility 0.6s; opacity: 0; visibility: hidden; }
+        .active { opacity: 1; visibility: visible; }
+        .dragon-logo { font-size: 100px; filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.5)); margin-bottom: 20px; animation: float 3s infinite ease-in-out; }
+        .btn-group { display: flex; flex-direction: column; gap: 15px; width: 250px; }
+        button { background: white; border: 2px solid var(--gold); padding: 15px; border-radius: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; }
+        .spec-card { background: rgba(255,255,255,0.9); border: 1px solid var(--gold); padding: 25px; border-radius: 15px; width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .row { display: flex; justify-content: space-between; margin: 10px 0; border-bottom: 1px solid #eee; }
+        #fps-counter { position: fixed; top: 10px; right: 10px; background: #000; color: var(--gold); padding: 5px 10px; border-radius: 5px; display: none; font-family: monospace; }
+        .footer { position: absolute; bottom: 15px; font-size: 0.7rem; color: #888; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    </style>
+</head>
+<body>
+    <div id="menu-page" class="gui-page active">
+        <div class="dragon-logo">🐉</div>
+        <div class="btn-group">
+            <button onclick="toggleFPS()">FPS Tester</button>
+            <button onclick="showPage('spec-page')">Specs</button>
+        </div>
+        <div class="footer">#made by gabzitself.</div>
+    </div>
+    <div id="spec-page" class="gui-page">
+        <div class="spec-card">
+            <h3 style="color:var(--gold); margin:0 0 15px 0; text-align:center;">SYSTEM SPECS</h3>
+            <div class="row"><span>Model:</span><span id="d-model">...</span></div>
+            <div class="row"><span>OS:</span><span>Android</span></div>
+            <div class="row"><span>Brain:</span><span>Gemini 3 Flash</span></div>
+            <button onclick="showPage('menu-page')" style="width:100%; margin-top:15px; font-size:0.7rem;">Back</button>
+        </div>
+        <div class="footer">#made by gabzitself.</div>
+    </div>
+    <div id="fps-counter">FPS: <span id="fps-val">0</span></div>
+    <script>
+        function showPage(p) { document.querySelectorAll('.gui-page').forEach(x=>x.classList.remove('active')); document.getElementById(p).classList.add('active'); }
+        async function getSpecs() { 
+            let m = "Android"; 
+            if(navigator.userAgentData) { const h = await navigator.userAgentData.getHighEntropyValues(['model']); m = h.model || m; }
+            document.getElementById('d-model').innerText = m;
+        }
+        getSpecs();
+        let fpsOn = false, frames = 0, last = performance.now();
+        function runFPS() { if(!fpsOn) return; frames++; let n = performance.now(); if(n>=last+1000){document.getElementById('fps-val').innerText=frames; frames=0; last=n;} requestAnimationFrame(runFPS); }
+        function toggleFPS() { fpsOn = !fpsOn; document.getElementById('fps-counter').style.display = fpsOn?'block':'none'; if(fpsOn) runFPS(); }
+    </script>
+</body>
+</html>
